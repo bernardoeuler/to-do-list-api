@@ -8,7 +8,7 @@ const PORT = process.env.PORT ?? 3000
 
 const database = {
     tasks: [
-        {id: "8a76ec78a4c8469687ff427ba7b4615d", description: "Comprar pão", createdAt: 1763236144826}
+        {id: "8a76ec78a4c8469687ff427ba7b4615d", description: "Comprar pão", status: "Pending", createdAt: 1763236144826}
     ]
 }
 
@@ -24,22 +24,75 @@ app.get("/tasks", (req, res) => {
     res.send(database.tasks)
 })
 
-app.post("/tasks", validateTask, (req, res) => {
+app.post("/tasks", (req, res) => {
+    if (!req.body) {
+        res.status(400).send({ error: "No data provided" })
+        return
+    } else if (!req.body.description) {
+        res.status(400).send({ error: "No description provided" })
+        return
+    } else if (!req.body.status) {
+        res.status(400).send({ error: "No status provided" })
+        return
+    } else if (typeof req.body.description !== "string") {
+        res.status(400).send({ error: "Description must be of type string" })
+        return
+    } else if (typeof req.body.status !== "string") {
+        res.status(400).send({ error: "Status must be of type string" })
+        return
+    } else if (req.body.status in ["Pending", "Done"]) {
+        res.status(400).send({ error: "Status must be either \"Pending\" or \"Complete\"" })
+        return
+    }if (!req.body) {
+        res.status(400).send({ error: "No data provided" })
+        return
+    } else if (!req.body.description) {
+        res.status(400).send({ error: "No description provided" })
+        return
+    } else if (!req.body.status) {
+        res.status(400).send({ error: "No status provided" })
+        return
+    } else if (typeof req.body.description !== "string") {
+        res.status(400).send({ error: "Description must be of type string" })
+        return
+    } else if (typeof req.body.status !== "string") {
+        res.status(400).send({ error: "Status must be of type string" })
+        return
+    } else if (req.body.status in ["Pending", "Done"]) {
+        res.status(400).send({ error: "Status must be either \"Pending\" or \"Complete\"" })
+        return
+    }
+
     const id = crypto.randomUUID().replaceAll("-","")
-    const { description } = req.body
+    const { description, status } = req.body
     const createdAt = Date.now()
 
-    database.tasks.push({ id, description, createdAt })
+    database.tasks.push({ id, description, status, createdAt })
 
     res.status(201).send({ message: "Task created successfully" })
 })
 
-app.patch("/tasks/:id", validateTask, (req, res) => {
+app.patch("/tasks/:id", (req, res) => {
+    if (!req.body) {
+        res.status(400).send({ error: "No data provided" })
+        return
+    } else if (req.body.description && typeof req.body.description !== "string") {
+        res.status(400).send({ error: "Description must be of type string" })
+        return
+    } else if (req.body.status && typeof req.body.status !== "string") {
+        res.status(400).send({ error: "Status must be of type string" })
+        return
+    } else if (req.body.status && req.body.status in ["Pending", "Done"]) {
+        res.status(400).send({ error: "Status must be either \"Pending\" or \"Complete\"" })
+        return
+    }
+
     const { id } = req.params
-    const { description } = req.body
+    const { description, status } = req.body
     const taskIndex = database.tasks.findIndex(task => task.id === id)
 
-    database.tasks[taskIndex].description = description
+    if (description) database.tasks[taskIndex].description = description
+    if (status) database.tasks[taskIndex].status = status
 
     res.status(200).send({ message: "Task updated successfully" })
 })
@@ -71,16 +124,7 @@ app.listen(PORT, (err) => {
 })
 
 function validateTask(req, res, next) {
-    if (!req.body) {
-        res.status(400).send({ error: "No data provided" })
-        return
-    } else if (!req.body.description) {
-        res.status(400).send({ error: "No description provided" })
-        return
-    } else if (typeof req.body.description !== "string") {
-        res.status(400).send({ error: "Description must be of type string" })
-        return
-    }
+    
 
     next()
 }
