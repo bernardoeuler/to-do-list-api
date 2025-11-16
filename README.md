@@ -24,6 +24,7 @@ npm start
 ## Endpoints
 
 ### GET /tasks
+Retorna todas as tarefas
 
 #### Resposta
 
@@ -40,7 +41,9 @@ npm start
 
 ### POST /tasks
 
-#### Requisição
+Cria uma nova tarefa
+
+#### Corpo da requisição
 
 ```json
 {
@@ -53,5 +56,37 @@ npm start
 ```json
 {
 	"message": "Task created successfully"
+}
+```
+
+### PATCH /tasks/:id
+
+Edita uma tarefa
+
+#### Corpo da requisição
+
+```json
+{
+	"status": "Done"
+}
+```
+
+#### Resposta
+
+```json
+{
+	"message": "Task updated successfully"
+}
+```
+
+### DELETE /tasks/:id
+
+Exclui uma tarefa
+
+#### Resposta
+
+```json
+{
+	"message": "Task deleted successfully"
 }
 ```
